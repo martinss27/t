@@ -368,12 +368,6 @@
             // Update content
             document.getElementById('viewContent').innerHTML = view.content;
             
-            // Update URL without reload
-            window.history.pushState({view: viewName}, view.title, `?view=${viewName}`);
-            
-            // Update page title
-            document.title = view.title + ' - SDK Test Page';
-            
             // Trigger page view event
             if (sdkReady && window.admira && window.admira.page) {
                 window.admira.page();
@@ -386,19 +380,6 @@
             
             console.log('Navigated to view:', viewName);
         }
-
-        // Handle browser back/forward
-        window.addEventListener('popstate', function(e) {
-            const viewName = new URLSearchParams(window.location.search).get('view') || 'home';
-            goToView(viewName);
-        });
-
-        // Initialize view from URL
-        window.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const viewName = urlParams.get('view') || 'home';
-            goToView(viewName);
-        });
     </script>
 
     <script src="http://localhost:5173/static/js/admira.js"></script>
