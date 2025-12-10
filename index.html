@@ -1,388 +1,53 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDK Test Page</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-            background: #f5f5f5;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        .button-secondary {
-            background: #2196F3;
-        }
-
-        .button-secondary:hover {
-            background: #0b7dda;
-        }
-
-        .view-section {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #eee;
-        }
-
-        .view-section h2 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .view-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Admira SDK Test Page</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 40px;
+      max-width: 400px;
+    }
+    button, input {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 15px;
+    }
+    form {
+      margin-top: 25px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>SDK Test Page</h1>
-
-        <form id="testForm">
-            <div class="form-group">
-                <label for="name">Nome:</label>
-                <input type="text" id="name" name="name" placeholder="Seu nome">
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="seu@email.com">
-            </div>
-
-            <div class="form-group">
-                <label for="message">Mensagem:</label>
-                <textarea id="message" name="message" placeholder="Sua mensagem"></textarea>
-            </div>
-
-            <button type="submit">Enviar Formulário</button>
-            <button type="button" onclick="trackButtonClick()">Track Button Click</button>
-            <button type="button" onclick="trackCustomEvent()">Track Custom Event</button>
-            <button type="button" onclick="testSDKConnection()" style="background: #ff9800;">🔍 Testar Conexão SDK</button>
-        </form>
-
-        <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 4px; max-height: 300px; overflow-y: auto;">
-            <h3 style="margin-bottom: 10px; font-size: 14px;">📋 Log de Eventos</h3>
-            <div id="eventLog" style="font-family: monospace; font-size: 12px; color: #666;">
-            </div>
-        </div>
-
-        <div class="view-section" style="background: #fff3cd; padding: 15px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
-            <h3 style="margin-bottom: 10px; color: #856404;">🔍 SDK Status</h3>
-            <div id="sdkStatus">
-                <p style="color: #856404;">Carregando SDK...</p>
-            </div>
-        </div>
-
-        <div class="view-section">
-            <h2>Test Page View Events</h2>
-            <p>Clique nos botões abaixo para navegar entre views e testar eventos de page_view:</p>
-            <div class="view-buttons">
-                <button class="button-secondary" onclick="goToView('home')">Home View</button>
-                <button class="button-secondary" onclick="goToView('about')">About View</button>
-                <button class="button-secondary" onclick="goToView('contact')">Contact View</button>
-                <button class="button-secondary" onclick="goToView('products')">Products View</button>
-            </div>
-            <div id="viewContent" style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 4px;">
-                <h3>Home View</h3>
-                <p>Esta é a view inicial. Use os botões acima para navegar entre diferentes views.</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Wait for SDK to load and initialize
-        let sdkReady = false;
-        
-        function addEventLog(message, type = 'info') {
-            const logDiv = document.getElementById('eventLog');
-            if (logDiv) {
-                const timestamp = new Date().toLocaleTimeString();
-                const color = type === 'error' ? '#d32f2f' : type === 'success' ? '#2e7d32' : '#666';
-                const logEntry = document.createElement('p');
-                logEntry.style.color = color;
-                logEntry.style.margin = '2px 0';
-                logEntry.textContent = `[${timestamp}] ${message}`;
-                logDiv.appendChild(logEntry);
-                logDiv.scrollTop = logDiv.scrollHeight;
-            }
-        }
-
-        function updateSDKStatus(message, isError = false) {
-            const statusDiv = document.getElementById('sdkStatus');
-            if (statusDiv) {
-                statusDiv.innerHTML = `<p style="color: ${isError ? '#d32f2f' : '#2e7d32'}; margin: 0;">${message}</p>`;
-            }
-            addEventLog(message, isError ? 'error' : 'success');
-        }
-
-        function testSDKConnection() {
-            addEventLog('Testando conexão com SDK...', 'info');
-            
-            if (!sdkReady) {
-                addEventLog('❌ SDK não está pronto. Verifique o status acima.', 'error');
-                return;
-            }
-
-            if (!window.admira) {
-                addEventLog('❌ window.admira não está disponível', 'error');
-                return;
-            }
-
-            // Test direct fetch to backend
-            addEventLog('Testando conexão direta com backend /collect...', 'info');
-            fetch('http://localhost:5173/collect', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    api_key: 'apikey-test123456789012345678901234567890',
-                    event_type: 'track',
-                    event_name: 'test_connection',
-                    properties: { test: true },
-                    utm_parameters: {
-                        utm_source: 'N/A',
-                        utm_medium: 'N/A',
-                        utm_campaign: 'N/A',
-                        utm_term: 'N/A',
-                        utm_content: 'N/A',
-                        gclid: 'N/A',
-                        msclkid: 'N/A',
-                        li_fat_id: 'N/A',
-                        ttclid: 'N/A',
-                        fbclid: 'N/A'
-                    },
-                    referrer: document.referrer || '',
-                    timestamp: new Date().toISOString()
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`HTTP ${response.status}: ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                addEventLog('✅ Backend respondeu com sucesso: ' + JSON.stringify(data), 'success');
-            })
-            .catch(error => {
-                addEventLog('❌ Erro ao conectar com backend: ' + error.message, 'error');
-            });
-
-            // Test SDK methods
-            if (window.admira.track) {
-                addEventLog('Testando window.admira.track()...', 'info');
-                try {
-                    window.admira.track('sdk_test', { test: true });
-                    addEventLog('✅ window.admira.track() executado', 'success');
-                } catch (error) {
-                    addEventLog('❌ Erro ao executar track(): ' + error.message, 'error');
-                }
-            } else {
-                addEventLog('❌ window.admira.track() não está disponível', 'error');
-            }
-        }
-
-        function checkSDKAndInit() {
-            if (window.admira && window.admira.init) {
-                // Initialize SDK with a test API key
-                // You should replace this with your actual API key
-                const apiKey = 'apikey-test123456789012345678901234567890';
-                try {
-                    window.admira.init(apiKey);
-                    sdkReady = true;
-                    console.log('✅ SDK initialized successfully');
-                    updateSDKStatus('✅ SDK carregado e inicializado com sucesso!');
-                } catch (error) {
-                    console.error('❌ Error initializing SDK:', error);
-                    updateSDKStatus('❌ Erro ao inicializar SDK: ' + error.message, true);
-                }
-            } else {
-                const errorMsg = '❌ SDK não carregado. Verifique se admira.js está acessível em http://localhost:5173/static/js/admira.js';
-                console.error(errorMsg);
-                updateSDKStatus(errorMsg, true);
-            }
-        }
-
-        // Check if SDK is already loaded
-        if (window.admira && window.admira.init) {
-            checkSDKAndInit();
-        } else {
-            // Wait for SDK script to load
-            window.addEventListener('load', function() {
-                setTimeout(checkSDKAndInit, 100);
-            });
-        }
-
-        // Form submit handler
-        document.getElementById('testForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                message: document.getElementById('message').value
-            };
-            console.log('Form submitted:', formData);
-            
-            // SDK will track this if configured
-            if (sdkReady && window.admira && window.admira.track) {
-                window.admira.track('form_submitted', formData);
-                console.log('✅ Track event sent: form_submitted');
-                addEventLog('✅ Evento enviado: form_submitted', 'success');
-            } else {
-                console.error('❌ SDK not ready. Cannot send track event.');
-                addEventLog('❌ SDK não está pronto. Evento não enviado.', 'error');
-            }
-        });
-
-        // Button click tracking
-        function trackButtonClick() {
-            console.log('Button clicked');
-            if (sdkReady && window.admira && window.admira.track) {
-                window.admira.track('button_click', {
-                    button_id: 'test_button',
-                    page: getCurrentView()
-                });
-                console.log('✅ Track event sent: button_click');
-                addEventLog('✅ Evento enviado: button_click', 'success');
-            } else {
-                console.error('❌ SDK not ready. Cannot send track event.');
-                addEventLog('❌ SDK não está pronto. Evento não enviado.', 'error');
-            }
-        }
-
-        // Custom event tracking
-        function trackCustomEvent() {
-            console.log('Custom event triggered');
-            if (sdkReady && window.admira && window.admira.track) {
-                window.admira.track('custom_event', {
-                    event_type: 'custom',
-                    timestamp: new Date().toISOString(),
-                    view: getCurrentView()
-                });
-                console.log('✅ Track event sent: custom_event');
-                addEventLog('✅ Evento enviado: custom_event', 'success');
-            } else {
-                console.error('❌ SDK not ready. Cannot send track event.');
-                addEventLog('❌ SDK não está pronto. Evento não enviado.', 'error');
-            }
-        }
-
-        // View navigation
-        const views = {
-            home: {
-                title: 'Home View',
-                content: '<h3>Home View</h3><p>Bem-vindo à página inicial. Esta é a view Home.</p>'
-            },
-            about: {
-                title: 'About View',
-                content: '<h3>About View</h3><p>Esta é a página sobre nós. Aqui você encontra informações sobre a empresa.</p>'
-            },
-            contact: {
-                title: 'Contact View',
-                content: '<h3>Contact View</h3><p>Entre em contato conosco através desta página.</p>'
-            },
-            products: {
-                title: 'Products View',
-                content: '<h3>Products View</h3><p>Confira nossos produtos e serviços.</p>'
-            }
-        };
-
-        function getCurrentView() {
-            return window.currentView || 'home';
-        }
-
-        function goToView(viewName) {
-            if (!views[viewName]) return;
-            
-            window.currentView = viewName;
-            const view = views[viewName];
-            
-            // Update content
-            document.getElementById('viewContent').innerHTML = view.content;
-            
-            // Trigger page view event
-            if (sdkReady && window.admira && window.admira.page) {
-                window.admira.page();
-                console.log('✅ Page view event sent for:', viewName);
-                addEventLog(`✅ Page view enviado: ${viewName}`, 'success');
-            } else {
-                console.error('❌ SDK not ready. Cannot send page view event.');
-                addEventLog('❌ SDK não está pronto. Page view não enviado.', 'error');
-            }
-            
-            console.log('Navigated to view:', viewName);
-        }
-    </script>
-
-    <script src="http://localhost:5173/static/js/admira.js"></script>
-    <script>admira.init('apikey-77492203-1dac-497f-b27a-ed3f31e8a218');</script>
+  <h1>:rocket: Admira SDK Test Page</h1>
+  <p>This page will automatically test:</p>
+  <ul>
+    <li>Page View event</li>
+    <li>Button Click event</li>
+    <li>Form Submit event</li>
+    <li>Identify</li>
+  </ul>
+  <button id="test-btn">Click Me</button>
+  <!-- Identify Test Form -->
+  <form id="identify-form">
+    <h3>Identify User</h3>
+    <label>Full Name</label><br>
+    <input type="text" id="full-name" placeholder="John Doe" required /><br><br>
+    <label>Email</label><br>
+    <input type="email" id="email" placeholder="john@example.com" required /><br><br>
+    <button type="submit">Send Identifys</button>
+  </form>
+  <!-- Your SDK -->
+  <script src="http://localhost:5173/static/js/admira.js"></script>
+  <script>
+    // Initialize SDK
+    admira.init("apikey-eb8abc49-c6ab-4880-912d-8acb5bac920f");
+    admira.track("test-event"),{
+      name:"user",
+    }
+  </script>
 </body>
 </html>
